@@ -130,5 +130,5 @@ root_agent = Agent(
     tools=[generate_plotly_chart]
 )
 
-# --- EXPOSE NATIVE PRODUCTION APP FOR WEB CONTAINERS ---
-app = root_agent.to_fastapi_app() if hasattr(root_agent, "to_fastapi_app") else root_agent
+# # --- EXPOSE NATIVE PRODUCTION APP FOR WEB CONTAINERS ---
+# app = root_agent.to_fastapi_app() if hasattr(root_agent, "to_fastapi_app") else root_agent

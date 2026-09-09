@@ -29,5 +29,6 @@ COPY . /app
 # Cloud Run listens on this port
 EXPOSE 8080
 
-# Start ADK's HTTP server
-CMD ["adk", "api_server", ".", "--host", "0.0.0.0", "--port", "8080"]
+# Start ADK's HTTP server with the dev chat UI (unauthenticated — fine for a
+# short public demo window only, per adk web's own security warning)
+CMD ["adk", "web", ".", "--host", "0.0.0.0", "--port", "8080"]

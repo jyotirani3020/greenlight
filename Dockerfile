@@ -2,17 +2,32 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+# System dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir google-adk plotly kaleido uvicorn fastapi pydantic mcp mcp-clickhouse
+# uv/uvx runs mcp-clickhouse in its own isolated env at runtime (its
+# `mcp`/`fastmcp` deps conflict with the version google-adk's McpToolset needs)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
+# Python dependencies (mcp pinned to the version google-adk's McpToolset needs;
+# mcp-clickhouse itself is NOT installed here, it's run via uvx below)
+RUN pip install --no-cache-dir \
+    google-adk \
+    plotly \
+    kaleido \
+    uvicorn \
+    fastapi \
+    pydantic \
+    "mcp==1.30.0"
+
+# Copy application
 COPY . /app
 
+# Cloud Run listens on this port
 EXPOSE 8080
 
-# 🌟 THE CORRECT ADK 2.8.0 RUNTIME COMMAND:
-# Since your root __init__.py imports root_agent, we serve the parent context path directory explicitly!
-CMD ["adk", "run", ".", "--host", "0.0.0.0", "--port", "8080"]
+# Start ADK's HTTP server
+CMD ["adk", "api_server", ".", "--host", "0.0.0.0", "--port", "8080"]

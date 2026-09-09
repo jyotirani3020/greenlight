@@ -2,4 +2,4 @@ google-adk
 clickhouse-connect
 requests
 python-dotenv
-mcp-clickhouse>=0.6.0
+mcp==1.30.0

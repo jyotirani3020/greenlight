@@ -1,2 +1,8 @@
 venv/
 .adk/
+.env
+*.env
+greenlight_agent/.env
+greenlight-*.json
+*service-account*.json
+*credentials*.json

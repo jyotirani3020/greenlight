@@ -1,0 +1,4 @@
+google-adk
+clickhouse-connect
+requests
+python-dotenv

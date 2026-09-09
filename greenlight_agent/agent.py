@@ -62,6 +62,9 @@ def generate_plotly_chart(genre: str, movie_titles: list[str], budgets_m: list[f
 # =====================================================================
 # 2. THE CLICKHOUSE NATIVE SUB-AGENT (Using ADK 2.0 Single-Turn Mode)
 # =====================================================================
+# =====================================================================
+# 2. THE CLICKHOUSE NATIVE SUB-AGENT (Fixed to bypass uvx on Cloud Run)
+# =====================================================================
 DATA_INSTRUCTION = """
 You are a database retrieval specialist running queries against a ClickHouse dataset via MCP tools. 
 The ClickHouse database contains:
@@ -83,8 +86,10 @@ data_agent = Agent(
         McpToolset(
             connection_params=StdioConnectionParams(
                 server_params=StdioServerParameters(
-                    command="uvx",
-                    args=["mcp-clickhouse"],
+                    # 🌟 FIXED FOR CLOUD RUN COMPLIANCE:
+                    # Switch from command="uvx" to direct python native module call execution paths
+                    command="python",
+                    args=["-m", "mcp_clickhouse"],
                     env=FULL_ENV,
                 ),
                 timeout=30,
@@ -92,6 +97,7 @@ data_agent = Agent(
         )
     ]
 )
+
 
 
 # =====================================================================

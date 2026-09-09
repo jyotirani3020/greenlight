@@ -1,0 +1,14 @@
+venv/
+.venv/
+.git/
+.adk/
+.env
+*.env
+greenlight_agent/.env
+greenlight_agent/.adk/
+greenlight-*.json
+*service-account*.json
+*credentials*.json
+__pycache__/
+*.pyc
+.DS_Store

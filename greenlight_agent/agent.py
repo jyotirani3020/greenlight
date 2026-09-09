@@ -13,6 +13,8 @@ from google.adk.tools.mcp_tool import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import (
     StdioConnectionParams,
 )
+from google.adk.tools.tool_context import ToolContext
+from google.genai import types
 from mcp import StdioServerParameters
 
 
@@ -35,15 +37,16 @@ FULL_ENV.update({
 # 1. VISUALIZATION TOOL
 # =====================================================================
 
-def generate_plotly_chart(
+async def generate_plotly_chart(
     genre: str,
     movie_titles: list[str],
     budgets_m: list[float],
     revenues_m: list[float],
+    tool_context: ToolContext,
 ) -> str:
     """
-    Generate an interactive Plotly chart comparing historical
-    movie budgets and revenues.
+    Generate a Plotly chart comparing historical movie budgets and
+    revenues, saved as a viewable image artifact.
     """
 
     import plotly.graph_objects as go
@@ -92,18 +95,17 @@ def generate_plotly_chart(
         plot_bgcolor="rgba(0,0,0,0)",
     )
 
-    filename = f"{genre.lower().replace(' ', '_')}_analytics.html"
+    filename = f"{genre.lower().replace(' ', '_')}_analytics.png"
+    png_bytes = fig.to_image(format="png", width=900, height=550, scale=2)
 
-    fig.write_html(
+    await tool_context.save_artifact(
         filename,
-        full_html=False,
-        include_plotlyjs="cdn",
+        types.Part.from_bytes(data=png_bytes, mime_type="image/png"),
     )
 
     return (
-        "Here is the interactive performance layout visualization "
-        f"matching your constraints. "
-        f"Click to view dashboard details: ./{filename}"
+        "Here is the performance segment visualization matching your "
+        f"constraints, saved as the artifact '{filename}'."
     )
 
 

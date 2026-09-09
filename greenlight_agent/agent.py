@@ -95,13 +95,22 @@ async def generate_plotly_chart(
         plot_bgcolor="rgba(0,0,0,0)",
     )
 
-    filename = f"{genre.lower().replace(' ', '_')}_analytics.png"
-    png_bytes = fig.to_image(format="png", width=900, height=550, scale=2)
-
-    await tool_context.save_artifact(
-        filename,
-        types.Part.from_bytes(data=png_bytes, mime_type="image/png"),
-    )
+    # Prefer a PNG (needs Chrome via kaleido); fall back to interactive HTML
+    # if Chrome isn't available in this environment (e.g. slim containers).
+    try:
+        filename = f"{genre.lower().replace(' ', '_')}_analytics.png"
+        png_bytes = fig.to_image(format="png", width=900, height=550, scale=2)
+        await tool_context.save_artifact(
+            filename,
+            types.Part.from_bytes(data=png_bytes, mime_type="image/png"),
+        )
+    except Exception:
+        filename = f"{genre.lower().replace(' ', '_')}_analytics.html"
+        html_bytes = fig.to_html(full_html=True, include_plotlyjs="cdn").encode("utf-8")
+        await tool_context.save_artifact(
+            filename,
+            types.Part.from_bytes(data=html_bytes, mime_type="text/html"),
+        )
 
     return (
         "Here is the performance segment visualization matching your "
